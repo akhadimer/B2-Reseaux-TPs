@@ -121,3 +121,57 @@ Thomas DUMONT
     nameserver 8.8.4.4
     ```
 
+* Afficher l'état actuel du firewall
+
+    ```
+    [akhadimer@localhost ~]$ sudo firewall-cmd --list-all
+    public (active)
+        target: default
+        icmp-block-inversion: no
+        interfaces: enp0s3 enp0s8
+        sources:
+        services: cockpit dhcpv6-client ssh
+        ports:
+        protocols:
+        masquerade: no
+        forward-ports:
+        source-ports:
+        icmp-blocks:
+        rich rules:
+    ```
+
+    L'interface enp0s3 et enps08 sont filtrées
+
+    Aucun port TCP/UPD sont autorisés.
+
+## II. Edit confidguration
+# 1. Configuration cartes réseau
+
+* Modifier la configuration de la carte réseau privée :
+
+    Sur le logiciel VirtualBox : Fichier --> Gestionnaire de réseau hôte --> Ethernet Adapter --> Adresse/Masque Ipv4=192.168.3.1/24
+
+* Dans la VM définir une IP statique pour cette nouvelle carte :
+
+    ```
+    [akhadimer@localhost network-scripts]$ cat ifcfg-enp0s8
+    BOOTPROTO=static
+    NAME=enp0s8
+    DEVICE=enp0s8
+    ONBOOT=yes
+    IPADDR=192.168.3.19
+    NETMASK=255.255.255.0
+    GATEWAY=192.168.3.254
+    ```
+
+# 2. Serveur SSH
+
+* Modifier la configuration du système pour que le serveur SSH tourne sur le port 2222 :
+
+    Accéder au fichier /etc/ssh/sshd_config et modifier la ligne "port".
+
+    *   Ajouter le port 2222 au firewall : 
+    
+        ```
+        [root@localhost ssh]# sudo firewall-cmd --add-port=2222/tcp --permanent
+        ```
