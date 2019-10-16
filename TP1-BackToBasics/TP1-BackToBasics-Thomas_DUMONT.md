@@ -174,4 +174,8 @@ Thomas DUMONT
     
         ```
         [root@localhost ssh]# sudo firewall-cmd --add-port=2222/tcp --permanent
+<<<<<<< HEAD
         ```
+=======
+        ```
+>>>>>>> 34f4f0067cc223f24c74ba9619fe339d5dce3379
