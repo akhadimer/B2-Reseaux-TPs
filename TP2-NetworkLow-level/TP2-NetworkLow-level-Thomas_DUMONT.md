@@ -3,7 +3,7 @@ Thomas DUMONT
 
 ## I. Simplest setup
 
-### ToDo
+#### ToDo
 
 * Mettre en place la topologie :
 
@@ -66,7 +66,7 @@ Thomas DUMONT
 
 ## II. More switches
 
-### ToDo
+#### ToDo
 
 * Mettre en place la topologie :
 
@@ -126,7 +126,7 @@ Thomas DUMONT
 
     CPD, qui veut dire Cisco Discovery Protocol, sert à, comme le dit son nom, découvrir les périphériques autour de lui et ainsi se faire connaître par les machines voisines.
 
-### Mise en évidence du Spanning Tree Protocol
+#### Mise en évidence du Spanning Tree Protocol
 
     * Déterminer les informations STP :
 
@@ -154,7 +154,7 @@ Thomas DUMONT
 
         ![](https://image.noelshack.com/fichiers/2019/42/3/1571262422-screen-pc1-pc3.png)
 
-### Reconfigurer STP
+#### Reconfigurer STP
 
     * Changer la priorité d'un switch qui n'est pas le root bridge :
 
@@ -175,12 +175,68 @@ Thomas DUMONT
 
 ## III. Isolation
 
-### ToDo
+### 1. Simple
 
-* Mettre en place la topologie ci-dessus avec des VLANs :
+#### ToDo
+
+* Mettre en place la topologie avec des VLANs :
 
     Sur le switch :
 
     Créer un vlan 10 en faisant ``vlan 10`` et ensuite lui donner un nom ``name client-network10``. Pareille pour le 20.
 
-    Ensuite donner pour chacun des trois interfaces l'accès vlan qui lui convient. Par exemple pour l'interface 0/0 faire ``interface Ethernet 0/0`` puis ``switchport mode access`` et pour terminer ``switchport access vlan 10``. 
+    Ensuite donner pour chacun des trois interfaces l'accès vlan qui lui convient. Par exemple pour l'interface 0/0 faire ``interface Ethernet 0/0`` puis ``switchport mode access`` et pour terminer ``switchport access vlan 10``.
+
+* Faire communiquer les PCs deux à deux :
+
+    ```
+    PC1> ping 10.2.3.2
+    host (10.2.3.2) not reachable
+
+    PC1> ping 10.2.3.3
+    host (10.2.3.3) not reachable
+    ```
+
+    ```
+    PC2> ping 10.2.3.1
+    host (10.2.3.1) not reachable
+
+    PC2> ping 10.2.3.3
+    84 bytes from 10.2.3.3 icmp_seq=1 ttl=64 time=0.543 ms
+    84 bytes from 10.2.3.3 icmp_seq=2 ttl=64 time=0.335 ms
+    ```
+
+    ```
+    PC3> ping 10.2.3.1
+    host (10.2.3.1) not reachable
+
+    PC3> ping 10.2.3.2
+    84 bytes from 10.2.3.2 icmp_seq=1 ttl=64 time=0.213 ms
+    84 bytes from 10.2.3.2 icmp_seq=2 ttl=64 time=0.362 ms
+    ```
+
+### 2. Avec trunk
+
+#### ToDo
+
+* Mettre en place la topologie :
+
+    Pour ce qui concerne la configuration des Vlans, faire la même chose qu'au 1. du III. Pour le trunk, se placer dans un premier temps sur le switch 1, selectionner l'interface qui est connecté à l'autre interface en faisant ``interface Ethernet 0/2``, faire ensuite les commandes suivantes : ``switchport trunk encapsulation dot1q`` et ``switchport mode trunk``. Et ensuite autoriser les vlans concerné : ``switchport trunk allowed vlan 10,20 ``. Faire ensuite la même chose pour le deuxième switch.
+
+* Faire communiquer les PCs deux à deux :
+
+    ```
+    PC1> ping 10.2.10.2
+    84 bytes from 10.2.10.2 icmp_seq=1 ttl=64 time=0.321 ms
+    84 bytes from 10.2.10.2 icmp_seq=2 ttl=64 time=0.491 ms
+    84 bytes from 10.2.10.2 icmp_seq=3 ttl=64 time=0.643 ms
+    84 bytes from 10.2.10.2 icmp_seq=4 ttl=64 time=0.514 ms
+    ```
+
+    ```
+    PC4> ping 10.2.20.1
+    84 bytes from 10.2.20.1 icmp_seq=1 ttl=64 time=0.303 ms
+    84 bytes from 10.2.20.1 icmp_seq=2 ttl=64 time=0.490 ms
+    84 bytes from 10.2.20.1 icmp_seq=3 ttl=64 time=0.767 ms
+    84 bytes from 10.2.20.1 icmp_seq=4 ttl=64 time=0.806 ms
+    ```
