@@ -56,8 +56,10 @@ Thomas DUMONT
             Et par la suite on autorise les vlans qui peuvent passer avec la commande ``switchport trunk allowed vlan 10``. Sur le switch1, pour l'interface qui le relie au switch2 on autorise la vlan 20,30 et 40, et pour l'interface qui le relie au routeur on autorise aussi les vlans 20,30 et 40. Sur le switch2, pour l'interface qui le relie au switch1 on autorise les vlans 20, 30 et 40.
 
 * Prove me that your setup is actually working :
-
+    
     * p1 :
+        <details>
+
         * to pc2 :
             ```
             P1> trace 10.3.20.2
@@ -70,6 +72,9 @@ Thomas DUMONT
             84 bytes from 10.3.20.2 icmp_seq=1 ttl=63 time=14.992 ms
             84 bytes from 10.3.20.2 icmp_seq=2 ttl=63 time=12.065 ms
             ```
+
+        </details>
+
     * PC1 :
         * to pc3 :
             ```
@@ -77,6 +82,8 @@ Thomas DUMONT
             host (10.3.10.254) not reachable
             ```     
     * PC2 :
+        <details>
+
         * to PC3 :
             ```
             PC2> trace 10.3.20.3
@@ -87,7 +94,6 @@ Thomas DUMONT
             84 bytes from 10.3.20.3 icmp_seq=1 ttl=64 time=0.494 ms
             84 bytes from 10.3.20.3 icmp_seq=2 ttl=64 time=0.484 ms
             84 bytes from 10.3.20.3 icmp_seq=3 ttl=64 time=0.458 ms
-
             ```
         * to PC4 :
             ```
@@ -101,6 +107,8 @@ Thomas DUMONT
             84 bytes from 10.3.30.4 icmp_seq=1 ttl=63 time=15.291 ms
             84 bytes from 10.3.30.4 icmp_seq=2 ttl=63 time=17.231 ms
             ```
+        </details>
+
     * PC3 :
         * to pc1 :
             ```
@@ -128,3 +136,66 @@ Thomas DUMONT
             84 bytes from 10.3.40.1 icmp_seq=1 ttl=63 time=18.775 ms
             84 bytes from 10.3.40.1 icmp_seq=2 ttl=63 time=15.464 ms
             ```
+    * SW1 :
+        ```
+        IOU1#show interfaces trunk
+
+        Port        Mode             Encapsulation  Status        Native vlan
+        Et0/2       on               802.1q         trunking      1
+        Et0/3       on               802.1q         trunking      1
+
+        Port        Vlans allowed on trunk
+        Et0/2       20,30,40
+        Et0/3       20,30,40
+
+        Port        Vlans allowed and active in management domain
+        Et0/2       20,30,40
+        Et0/3       20,30,40
+
+        Port        Vlans in spanning tree forwarding state and not pruned
+        Et0/2       20,30,40
+        Et0/3       20,30,40
+        ```
+    * SW2 :
+        ```
+        IOU2#show interfaces trunk
+
+        Port        Mode             Encapsulation  Status        Native vlan
+        Et0/0       on               802.1q         trunking      1
+
+        Port        Vlans allowed on trunk
+        Et0/0       20,30,40
+
+        Port        Vlans allowed and active in management domain
+        Et0/0       20,30,40
+
+        Port        Vlans in spanning tree forwarding state and not pruned
+        Et0/0       20,30,40
+        ```
+    * R1 :
+        ```
+        R1#show running-config
+
+        [...]
+
+        interface Ethernet0/0
+        no ip address
+        half-duplex
+        !
+        interface Ethernet0/0.10
+        encapsulation dot1Q 10
+        ip address 10.3.10.254 255.255.255.0
+        !
+        interface Ethernet0/0.20
+        encapsulation dot1Q 20
+        ip address 10.3.20.254 255.255.255.0
+        !
+        interface Ethernet0/0.30
+        encapsulation dot1Q 30
+        ip address 10.3.30.254 255.255.255.0
+        !
+        interface Ethernet0/0.40
+        encapsulation dot1Q 40
+        ip address 10.3.40.254 255.255.255.0
+        !
+        ```
