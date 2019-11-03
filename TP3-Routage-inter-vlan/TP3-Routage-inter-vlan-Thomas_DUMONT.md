@@ -30,10 +30,10 @@ Thomas DUMONT
 
         * Sur chaque interface des deux switchs qui sont connectés aux VPCS, il faut configurer les VLANS. Exemple pour le PC1 :
         
-        On créer la vlan 10 :
+        Il faut créer les vlans 10,20,30 et 40 sur le switch1 et sur le switch2 les vlans 20, 30 et 40 :
         ```
         (config)# vlan 10
-        (config-vlan)# name client-network
+        (config-vlan)# name client-network10
         (config-vlan)# exit
         ```
 
@@ -53,6 +53,78 @@ Thomas DUMONT
             (config-if)# switchport mode trunk
             ```
 
-            Et par la suite on autorise les vlans qui peuvent passer avec la commande ``switchport trunk allowed vlan 10``. Sur le switch1, pour l'interface qui le relie au switch2 on autorise la vlan 20, et pour l'interface qui le relie au routeur on autorise les vlans 10, 20, 30 et 40. Sur le switch2, pour l'interface qui le relie au switch1 on autorise les vlans 20, 30 et 40.
+            Et par la suite on autorise les vlans qui peuvent passer avec la commande ``switchport trunk allowed vlan 10``. Sur le switch1, pour l'interface qui le relie au switch2 on autorise la vlan 20,30 et 40, et pour l'interface qui le relie au routeur on autorise aussi les vlans 20,30 et 40. Sur le switch2, pour l'interface qui le relie au switch1 on autorise les vlans 20, 30 et 40.
 
-PC2 et PC3 peuvent s'entre ping et elles peuvent ping le routeur, mais quand j'essaye de ping les autres machines entre elles, cela me met un "timeout".
+* Prove me that your setup is actually working :
+
+    * p1 :
+        * to pc2 :
+            ```
+            P1> trace 10.3.20.2
+            trace to 10.3.20.2, 8 hops max, press Ctrl+C to stop
+            1   10.3.40.254   11.722 ms  9.104 ms  9.038 ms
+            2     *  *  *
+            3   *10.3.20.2   13.261 ms (ICMP type:3, code:3, Destination port unreachable)
+
+            P1> ping 10.3.20.2
+            84 bytes from 10.3.20.2 icmp_seq=1 ttl=63 time=14.992 ms
+            84 bytes from 10.3.20.2 icmp_seq=2 ttl=63 time=12.065 ms
+            ```
+    * PC1 :
+        * to pc3 :
+            ```
+            PC1> ping 10.3.20.2
+            host (10.3.10.254) not reachable
+            ```     
+    * PC2 :
+        * to PC3 :
+            ```
+            PC2> trace 10.3.20.3
+            trace to 10.3.20.3, 8 hops max, press Ctrl+C to stop
+            1   *10.3.20.3   0.410 ms (ICMP type:3, code:3, Destination port unreachable)
+
+            PC2> ping 10.3.20.3
+            84 bytes from 10.3.20.3 icmp_seq=1 ttl=64 time=0.494 ms
+            84 bytes from 10.3.20.3 icmp_seq=2 ttl=64 time=0.484 ms
+            84 bytes from 10.3.20.3 icmp_seq=3 ttl=64 time=0.458 ms
+
+            ```
+        * to PC4 :
+            ```
+            PC2> trace 10.3.30.4
+            trace to 10.3.30.4, 8 hops max, press Ctrl+C to stop
+            1   10.3.20.254   9.220 ms  9.550 ms  9.245 ms
+            2     *  *  *
+            3   *10.3.30.4   14.429 ms (ICMP type:3, code:3, Destination port unreachable)
+
+            PC2> ping 10.3.30.4
+            84 bytes from 10.3.30.4 icmp_seq=1 ttl=63 time=15.291 ms
+            84 bytes from 10.3.30.4 icmp_seq=2 ttl=63 time=17.231 ms
+            ```
+    * PC3 :
+        * to pc1 :
+            ```
+            PC3> trace 10.3.10.1
+            trace to 10.3.10.1, 8 hops max, press Ctrl+C to stop
+            1   10.3.20.254   9.717 ms  9.392 ms  9.873 ms
+            2     *  *  *
+            3     *  *  *
+            4     *  *  *
+            5     *  *  *
+            6     *  *  *
+            7     *  *  *
+            8     *  *  *
+            ```
+    * PC4 :
+        * to p1 :
+            ```
+            PC4> trace 10.3.40.1
+            trace to 10.3.40.1, 8 hops max, press Ctrl+C to stop
+            1   10.3.30.254   12.899 ms  9.530 ms  9.226 ms
+            2     *  *  *
+            3   *10.3.40.1   15.299 ms (ICMP type:3, code:3, Destination port unreachable)
+
+            PC4> ping 10.3.40.1
+            84 bytes from 10.3.40.1 icmp_seq=1 ttl=63 time=18.775 ms
+            84 bytes from 10.3.40.1 icmp_seq=2 ttl=63 time=15.464 ms
+            ```
