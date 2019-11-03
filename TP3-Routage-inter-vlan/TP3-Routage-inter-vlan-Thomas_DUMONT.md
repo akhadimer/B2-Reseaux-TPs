@@ -53,4 +53,6 @@ Thomas DUMONT
             (config-if)# switchport mode trunk
             ```
 
-            Et par la suite on autorise les vlans qui peuvent passer avec la commande ``switchport trunk allowed vlan 10``. Sur le switch1, pour l'interface qui le relie au switch2 on autorise la vlan 20, et pour l'interface qui le relie au routeur on autorise les vlans 10, 20, 30 et 40. Sur le switch2, pour l'interface qui le relie au switch1 on autorise les vlans 30 et 40.
+            Et par la suite on autorise les vlans qui peuvent passer avec la commande ``switchport trunk allowed vlan 10``. Sur le switch1, pour l'interface qui le relie au switch2 on autorise la vlan 20, et pour l'interface qui le relie au routeur on autorise les vlans 10, 20, 30 et 40. Sur le switch2, pour l'interface qui le relie au switch1 on autorise les vlans 20, 30 et 40.
+
+PC2 et PC3 peuvent s'entre ping et elles peuvent ping le routeur, mais quand j'essaye de ping les autres machines entre elles, cela me met un "timeout".
